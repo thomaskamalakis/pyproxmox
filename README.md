@@ -34,7 +34,10 @@ You can edit the `defaults.txt` in order to reflect your Proxmox enviroment. In 
 If all works correctly you should see the version of your Proxmox environment!
 
 ### An example use case
-The `createmulvm.py` is an example where a number of VMs are created and assigned to users. Use the `users.csv` file to assign each VM to a new or existing user (if the user does not exist, it will be created). Make sure to include the realm after the username, e.g. `myuser@MYREALM` refers to a user with username `myuser` at realm `MYREALM` 
+The `createmulvm.py` is an example where a number of VMs are created and assigned to users. Use the `users.csv` file to assign each VM to a new or existing user (if the user does not exist, it will be created). Make sure to include the realm after the username, e.g. `myuser@MYREALM` refers to a user with username `myuser` at realm `MYREALM`
+
+In the script code you need to set the `CSV_FILE` to the name of the `csv` file containing the VM/user assignments, the `VM_TEMPLATE` to the ID of the template VM and the `NODE` to the name of the proxmox node where the cloning will take place.
+
 
 
 
