@@ -38,6 +38,14 @@ If all works correctly you should see the version of your Proxmox environment!
 
 In the script code you need to set the `CSV_FILE` to the name of the `csv` file containing the VM/user assignments, the `VM_TEMPLATE` to the ID of the template VM and the `NODE` to the name of the proxmox node where the cloning will take place.
 
+The csv file must be of the form
+```
+user;vm;vmid
+user1@REALM1;user1vm;200
+user2@REALM1;user2vm;201
+...
+```
+
 
 
 
