@@ -42,10 +42,10 @@ The csv file must be of the form
 ```
 user;vm;vmid
 user1@REALM1;user1vm;200
-user2@REALM1;user2vm;201
+user2@REALM2;user2vm;201
 ...
 ```
-
+All users obtain a standard PVEUser permission on the assigned VMs.
 
 
 
