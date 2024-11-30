@@ -1,0 +1,18 @@
+---
+- name: Create a user with sudo privileges
+  hosts: all
+  become: yes
+  remote_user: root
+  tasks:
+    - name: Create a new user
+      user:
+        name: "{{ username }}"  
+        password: "{{ password | password_hash('sha512') }}"  
+        shell: /bin/bash
+        state: present
+
+    - name: Add user to sudo group
+      user:
+        name: "{{ username }}"
+        groups: sudo  
+        append: yes
