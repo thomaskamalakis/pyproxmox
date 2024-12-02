@@ -42,7 +42,7 @@ class api:
         self.ansible_scripts = ansible_scripts
 
         self.headers = {
-            'Authorization' : 'PVEAPIToken=root@pam!%s=%s' %(self. tokenid, self.secret)
+            'Authorization' : 'PVEAPIToken=%s=%s' %(self. tokenid, self.secret)
         }
 
     def get(self, suburl):
