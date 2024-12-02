@@ -1,6 +1,6 @@
 [defaults]
 secret = mysecret
-tokenid = admin
+tokenid = root@pam!admin
 url = https://example.com:8006/api2/json/
 timeout = 600
 check_interval = 1
