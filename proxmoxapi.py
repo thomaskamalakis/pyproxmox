@@ -16,7 +16,7 @@ TOKENID = defaults['tokenid']
 URL = defaults['url']
 TIMEOUT = int(defaults['timeout'])
 CHECK_INTERVAL = int(defaults['check_interval'])
-ANSIBLE_SCRIPTS = {'sudo' : 'sudo.yml'}
+ANSIBLE_SCRIPTS = {'sudo' : 'sudo.yml', 'shutdown' : 'shutdown.yml'}
 
 def elapsed(t0):
     t1 = datetime.datetime.now()
@@ -62,6 +62,10 @@ class api:
         print(r.text)
         return r.json()['data']
     
+    def delete(self, suburl):
+        url = self.url + suburl
+        return requests.delete(url, headers=self.headers, verify = self.verify)
+
     def put(self, suburl, params):
         url = self.url + suburl
         print(url)
@@ -92,7 +96,10 @@ class api:
         nodeids = [n['node'] for n in nodes]
         vms = []
         for nodeid in nodeids:
-            vms += self.get_node_vms(nodeid)
+            vms_node = self.get_node_vms(nodeid)
+            for vm in vms_node:
+                vm['nodeid'] = nodeid
+            vms += vms_node
         
         return vms
 
@@ -135,7 +142,21 @@ class api:
         suburl = 'nodes/{node}/qemu/{vmid}/agent/network-get-interfaces'.format(node=nodeid, 
                                                                   vmid=vmid)
         return self.get(suburl)
-        
+
+    def delete_vm(self, nodeid, vmid):
+        suburl = 'nodes/{node}/qemu/{vmid}'.format(node=nodeid,vmid=vmid)
+        return self.delete(suburl)
+
+    def get_vms_net(self):
+        vms = self.get_vms()
+        for vm in vms:
+            vm['net'] = self.get_vm_net(vm['nodeid'], vm['vmid'])
+        return vms 
+
+    def get_pool_vms(self, pool_id):
+        suburl = 'pools/{pool_id}'.format(pool_id=pool_id)
+        return self.get(suburl)
+
     def wait_for_task(self, nodeid, upid, timeout = None, echodot=True):
         t0 = datetime.datetime.now()
 
@@ -153,6 +174,12 @@ class api:
         
         return -1  
 
+    def stop_vm(self, nodeid, vmid):
+        suburl = 'nodes/{node}/qemu/{vmid}/status/stop'.format(node=nodeid, vmid=vmid)
+        params = {'node' : nodeid, 'vmid' : vmid}
+        headers = self.headers
+        return self.post(suburl, params=params)
+        
     def create_user(self, userid, **params):
         suburl = 'access/users'
         params['userid'] = userid
@@ -185,6 +212,16 @@ class api:
         }
         return self.put(suburl, params=params)
     
+    def set_storage_user(self, userid, storageid):
+        suburl = 'access/acl'        
+        params = {
+            'path': '/storage/'+storageid, 
+            'propagate': 1, 
+            'users': [userid], 
+            'roles': ['PVEDatastoreUser']
+        }
+        return self.put(suburl, params=params)
+    
     def create_sudo_user(self, ip, user, password):
         extra_vars = 'username={user} password={password}'.format(user=user, password=password)
         ip += ','
@@ -193,7 +230,15 @@ class api:
                         self.ansible_scripts['sudouser'],'--extra-vars', extra_vars],
                         stderr = sys.stderr, stdout = sys.stdout)
         
-
+    def ansible_shut_down(self, ip):
+        subprocess.run(['ansible-playbook', '-i', ip, self.ansible_scripts['shutdown']],
+                        stderr = sys.stderr, stdout = sys.stdout)
+    
+        
+    def create_token(self, userid, tokenid):
+        suburl = 'access/users/{userid}/token/{tokenid}'.format(userid=userid, tokenid=tokenid)
+        params = {'privsep' : False}
+        return self.post(suburl, params = params)  
       
             
 
