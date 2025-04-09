@@ -1,8 +1,8 @@
 from proxmoxapi import api
 import csv
 
-CSV_FILE = 'users2.csv'
-NODE = 'proxmoxedu2'
+CSV_FILE = 'users_efrei_2025.csv'
+NODE = 'proxmoxedu3'
 def get_list(filename = CSV_FILE):
     with open(filename,'r') as f:
         reader = csv.DictReader(f , delimiter = ';')
@@ -14,7 +14,7 @@ vms = get_list()
 
 a = api()
 MAC_addresses={}
-start = 65
+start = 30
 IP_RANGE = '10.100.52.{x}'
 
 for vm in vms:
