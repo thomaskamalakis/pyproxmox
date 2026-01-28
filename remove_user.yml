@@ -1,0 +1,44 @@
+---
+- name: Remove user
+  hosts: all
+  become: yes
+  remote_user: root
+  tasks:
+    - name: Get UID
+      ansible.builtin.command: id -u {{ username }}
+      register: user_uid
+      failed_when: false
+      changed_when: false
+
+    - name: Kill user via logind
+      ansible.builtin.shell: |
+        loginctl kill-user {{ username }} || true
+      changed_when: false
+
+    - name: Stop user manager
+      ansible.builtin.shell: |
+        systemctl stop user@{{ user_uid.stdout }}.service || true
+        systemctl reset-failed user@{{ user_uid.stdout }}.service || true
+      changed_when: false
+      when: user_uid.rc == 0
+
+    - name: Remove runtime dir
+      ansible.builtin.shell: |
+        rm -rf /run/user/{{ user_uid.stdout }} || true
+      changed_when: false
+      when: user_uid.rc == 0
+
+    - name: Restart logind
+      ansible.builtin.shell: |
+        systemctl daemon-reexec
+        systemctl restart systemd-logind
+      changed_when: false
+
+    - name: Kill remaining processes
+      ansible.builtin.shell: |
+        pkill -9 -u {{ username }} || true
+      changed_when: false
+      
+    - name: Delete user
+      ansible.builtin.shell: |
+        userdel -rf {{ username }}

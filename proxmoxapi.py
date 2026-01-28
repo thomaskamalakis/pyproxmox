@@ -16,7 +16,9 @@ TOKENID = defaults['tokenid']
 URL = defaults['url']
 TIMEOUT = int(defaults['timeout'])
 CHECK_INTERVAL = int(defaults['check_interval'])
-ANSIBLE_SCRIPTS = {'sudo' : 'sudo.yml', 'shutdown' : 'shutdown.yml'}
+ANSIBLE_SCRIPTS = {'sudo' : 'sudo.yml', 
+                   'shutdown' : 'shutdown.yml',
+                   'remove_user' : 'remove_user.yml'}
 
 def elapsed(t0):
     t1 = datetime.datetime.now()
@@ -227,8 +229,17 @@ class api:
         ip += ','
         print(extra_vars)
         subprocess.run(['ansible-playbook', '-i', ip, 
-                        self.ansible_scripts['sudouser'],'--extra-vars', extra_vars],
+                        self.ansible_scripts['sudo'],'--extra-vars', extra_vars],
                         stderr = sys.stderr, stdout = sys.stdout)
+        
+    def remove_vm_user(self, ip, user):
+        extra_vars = 'username={user}'.format(user=user)
+        ip += ','
+        print(extra_vars)
+        subprocess.run(['ansible-playbook', '-i', ip, 
+                        self.ansible_scripts['remove_user'],'--extra-vars', extra_vars],
+                        stderr = sys.stderr, stdout = sys.stdout)
+        
         
     def ansible_shut_down(self, ip):
         subprocess.run(['ansible-playbook', '-i', ip, self.ansible_scripts['shutdown']],
