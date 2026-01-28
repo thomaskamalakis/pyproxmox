@@ -181,7 +181,13 @@ class api:
         params = {'node' : nodeid, 'vmid' : vmid}
         headers = self.headers
         return self.post(suburl, params=params)
-        
+    
+    def start_vm(self, nodeid, vmid):
+        suburl = 'nodes/{node}/qemu/{vmid}/status/start'.format(node=nodeid, vmid=vmid)
+        params = {'node' : nodeid, 'vmid' : vmid}
+        headers = self.headers
+        return self.post(suburl, params=params)
+
     def create_user(self, userid, **params):
         suburl = 'access/users'
         params['userid'] = userid

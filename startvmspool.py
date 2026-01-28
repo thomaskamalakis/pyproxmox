@@ -4,5 +4,5 @@ POOL = 'applied'
 a = api()
 vms = a.get_pool_vms(POOL)
 for vm in vms['members']:
-    print('Stopping ', vm['vmid'])
-    a.stop_vm(vm['node'],vm['vmid'])
+    print('Starting ', vm['vmid'])
+    a.start_vm(vm['node'],vm['vmid'])

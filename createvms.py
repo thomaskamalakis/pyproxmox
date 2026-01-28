@@ -1,8 +1,8 @@
 from proxmoxapi import api
 import csv
 
-CSV_FILE = 'applied2025.csv'
-CSV_FILE_OUTPUT = 'applied2025.out.csv'
+CSV_FILE = 'applied.csv'
+CSV_FILE_OUTPUT = 'applied.out.csv'
 DHCP_CONFIG_FILE = 'dhcp.conf'
 
 VM_TEMPLATE = 118
