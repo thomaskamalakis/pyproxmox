@@ -1,8 +1,12 @@
 ---
-- name: Create a user with sudo privileges
+- name: Shutdown
   hosts: all
   become: yes
   remote_user: root
   tasks:
-    - name: Unconditionally shut down the machine with all defaults
-      command: /sbin/shutdown -h now
+  - name: Shutdown VM without waiting for SSH timeout
+    ansible.builtin.shell: sleep 2 && shutdown -h now
+    async: 1
+    poll: 0
+    become: true
+    ignore_errors: true

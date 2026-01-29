@@ -248,6 +248,7 @@ class api:
         
         
     def ansible_shut_down(self, ip):
+        ip += ','
         subprocess.run(['ansible-playbook', '-i', ip, self.ansible_scripts['shutdown']],
                         stderr = sys.stderr, stdout = sys.stdout)
     

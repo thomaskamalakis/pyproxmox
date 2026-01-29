@@ -1,22 +1,24 @@
 from proxmoxapi import api
 import csv
 
-CSV_FILE = 'users2.csv'
-NODE = 'proxmoxedu2'
-def get_list(filename = CSV_FILE):
-    with open(filename,'r') as f:
-        reader = csv.DictReader(f , delimiter = ';')
-        vm_list = list(reader)
+NODE = 'proxmoxedu3'
+POOL = 'applied'
+START_ID = 400
+INTERFACE_NAME = 'ens18'
 
-    return vm_list
-
-vms_list = get_list()
 a = api()
-vms = a.get_vms_net()
+vms = a.get_pool_vms(POOL)['members']
+for vm in vms:
+    vmid = vm['vmid']
+    if vmid > START_ID:
+        nets = a.get_vm_net(NODE, vmid)['result']        
+        for net in nets:
+            if net['name'] == INTERFACE_NAME:
+                ip_address = net['ip-addresses'][0]['ip-address']
+                print('Shutting down VM with id', vmid, 'and ip address',ip_address)
+                a.ansible_shut_down(ip_address)
 
-# ips = []
-# for vm in vms:
-#     ips.append(vm['ip'])
+
         
 
 
