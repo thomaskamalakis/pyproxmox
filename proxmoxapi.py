@@ -256,8 +256,13 @@ class api:
     def create_token(self, userid, tokenid):
         suburl = 'access/users/{userid}/token/{tokenid}'.format(userid=userid, tokenid=tokenid)
         params = {'privsep' : False}
-        return self.post(suburl, params = params)  
-      
+        return self.post(suburl, params = params) 
+
+    def migrate_vm(self, source_node, target_node, vmid):
+        suburl = f'nodes/{source_node}/qemu/{vmid}/migrate'
+        params = { 'target' : target_node }
+        return self.post(suburl, params = params) 
+
             
 
 
